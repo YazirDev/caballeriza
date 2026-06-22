@@ -1,35 +1,73 @@
-import { Nav } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
 const menuItems = [
-  { path: "/dashboard", label: "Dashboard" },
-  { path: "/caballos", label: "Caballos" },
-  { path: "/personal", label: "Personal" },
-  { path: "/reservas", label: "Reservas" },
-  { path: "/alimentacion", label: "Alimentación" },
-  { path: "/inventario", label: "Inventario" },
-  { path: "/alertas", label: "Alertas" }
+  {
+    label: "Dashboard",
+    path: "/dashboard",
+    icon: "bi bi-grid-1x2",
+  },
+  {
+    label: "Caballos",
+    path: "/horses",
+    icon: "bi bi-shield-check",
+  },
+  {
+    label: "Personal",
+    path: "/staff",
+    icon: "bi bi-people",
+  },
+  {
+    label: "Reservas",
+    path: "/reservations",
+    icon: "bi bi-calendar-event",
+  },
+  {
+    label: "Alimentación",
+    path: "/feeding",
+    icon: "bi bi-cup-hot",
+  },
+  {
+    label: "Inventario",
+    path: "/inventory",
+    icon: "bi bi-box-seam",
+  },
+  {
+    label: "Alertas",
+    path: "/alerts",
+    icon: "bi bi-exclamation-triangle",
+  },
 ];
 
 export default function Sidebar() {
   return (
-    <aside className="d-none d-lg-block bg-light border-end min-vh-100 p-3">
-      <h6 className="text-uppercase text-muted mb-3">Menú</h6>
+    <aside className="app-sidebar">
+      <div className="sidebar-brand">
+        <div className="brand-icon">
+          <i className="bi bi-lightning-charge-fill"></i>
+        </div>
+        <span>Gestión de Caballeriza</span>
+      </div>
 
-      <Nav className="flex-column gap-1">
+      <nav className="sidebar-nav">
         {menuItems.map((item) => (
-          <Nav.Link
+          <NavLink
             key={item.path}
-            as={NavLink}
             to={item.path}
             className={({ isActive }) =>
-              `rounded px-3 py-2 ${isActive ? "bg-dark text-white" : "text-dark"}`
+              isActive ? "sidebar-link active" : "sidebar-link"
             }
           >
-            {item.label}
-          </Nav.Link>
+            <i className={item.icon}></i>
+            <span>{item.label}</span>
+            <i className="bi bi-chevron-right ms-auto sidebar-chevron"></i>
+          </NavLink>
         ))}
-      </Nav>
+      </nav>
+
+      <div className="sidebar-footer">
+        <small>SISTEMA V1.0</small>
+        <small>Proyecto Programación IV - 2026</small>
+      </div>
     </aside>
   );
 }

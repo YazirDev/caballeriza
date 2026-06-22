@@ -1,86 +1,60 @@
 import { createContext, useContext, useMemo, useState } from "react";
-import { authApi } from "../api/authApi";
-import { getToken, getUser, removeSession, saveSession } from "./authStorage";
+import { loginRequest, registerRequest } from "../api/authApi";
+import {
+  clearAuthStorage,
+  getToken,
+  getUser,
+  saveToken,
+  saveUser,
+} from "./authStorage";
 
 const AuthContext = createContext(null);
-
-const normalizeLoginResponse = (data) => {
-  const token = data?.token || data?.jwt || data?.accessToken;
-  const user = data?.user || data?.usuario || {
-    id: data?.id,
-    nombre: data?.nombre || data?.name,
-    email: data?.email,
-    rol: data?.rol || data?.role
-  };
-
-  return { token, user };
-};
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(getToken());
   const [user, setUser] = useState(getUser());
-  const [loading, setLoading] = useState(false);
 
   const isAuthenticated = Boolean(token);
 
-  const login = async (credentials) => {
-    setLoading(true);
+  async function login(credentials) {
+    const response = await loginRequest(credentials);
 
-    try {
-      const data = await authApi.login(credentials);
-      const session = normalizeLoginResponse(data);
+    const jwt = response.token || response.accessToken || response.jwt;
+    const userData = response.user || response.usuario || response;
 
-      if (!session.token) {
-        throw new Error("El backend no devolvió token.");
-      }
-
-      saveSession(session.token, session.user);
-      setToken(session.token);
-      setUser(session.user);
-
-      return session;
-    } finally {
-      setLoading(false);
+    if (!jwt) {
+      throw new Error("El backend no devolvió un token JWT.");
     }
-  };
 
-  const register = async (userData) => {
-    setLoading(true);
+    saveToken(jwt);
+    saveUser(userData);
 
-    try {
-      return await authApi.register(userData);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setToken(jwt);
+    setUser(userData);
 
-  const logout = () => {
-    removeSession();
+    return response;
+  }
+
+  async function register(payload) {
+    return registerRequest(payload);
+  }
+
+  function logout() {
+    clearAuthStorage();
     setToken(null);
     setUser(null);
-  };
-
-  const hasRole = (roles = []) => {
-    if (!user?.rol && !user?.role) {
-      return false;
-    }
-
-    const currentRole = user.rol || user.role;
-    return roles.includes(currentRole);
-  };
+  }
 
   const value = useMemo(
     () => ({
       token,
       user,
-      loading,
       isAuthenticated,
       login,
       register,
       logout,
-      hasRole
     }),
-    [token, user, loading, isAuthenticated]
+    [token, user, isAuthenticated]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,46 +1,32 @@
 const TOKEN_KEY = "caballeriza_token";
 const USER_KEY = "caballeriza_user";
 
-export const saveToken = (token) => {
+export function saveToken(token) {
   localStorage.setItem(TOKEN_KEY, token);
-};
+}
 
-export const getToken = () => {
+export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
-};
+}
 
-export const removeToken = () => {
+export function removeToken() {
   localStorage.removeItem(TOKEN_KEY);
-};
+}
 
-export const saveUser = (user) => {
+export function saveUser(user) {
   localStorage.setItem(USER_KEY, JSON.stringify(user));
-};
+}
 
-export const getUser = () => {
-  const user = localStorage.getItem(USER_KEY);
+export function getUser() {
+  const raw = localStorage.getItem(USER_KEY);
+  return raw ? JSON.parse(raw) : null;
+}
 
-  if (!user) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(user);
-  } catch {
-    return null;
-  }
-};
-
-export const removeUser = () => {
+export function removeUser() {
   localStorage.removeItem(USER_KEY);
-};
+}
 
-export const saveSession = (token, user) => {
-  saveToken(token);
-  saveUser(user);
-};
-
-export const removeSession = () => {
+export function clearAuthStorage() {
   removeToken();
   removeUser();
-};
+}

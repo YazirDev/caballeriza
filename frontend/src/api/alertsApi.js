@@ -1,28 +1,21 @@
 import api from "./axiosConfig";
 
-export const getAlerts = async () => {
-  const response = await api.get("/alertas");
-  return response.data;
-};
+export async function getAlerts(params = {}) {
+  const { data } = await api.get("/alerts", { params });
+  return data;
+}
 
-export const getUnreadAlerts = async () => {
-  const response = await api.get("/alertas/no-leidas");
-  return response.data;
-};
+export async function getUnreadAlerts() {
+  const { data } = await api.get("/alerts/unread");
+  return data;
+}
 
-export const markAlertAsRead = async (id) => {
-  const response = await api.put(`/alertas/${id}/leer`);
-  return response.data;
-};
+export async function markAlertAsRead(id) {
+  const { data } = await api.patch(`/alerts/${id}/read`);
+  return data;
+}
 
-export const generateAlerts = async () => {
-  const response = await api.post("/alertas/generar");
-  return response.data;
-};
-
-export const alertsApi = {
-  getAlerts,
-  getUnreadAlerts,
-  markAlertAsRead,
-  generateAlerts
-};
+export async function markAllAlertsAsRead() {
+  const { data } = await api.patch("/alerts/read-all");
+  return data;
+}

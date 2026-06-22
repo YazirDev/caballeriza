@@ -1,52 +1,36 @@
 import api from "./axiosConfig";
 
-export const getHorses = async () => {
-  const response = await api.get("/caballos");
-  return response.data;
-};
+export async function getHorses() {
+  const { data } = await api.get("/horses");
+  return data;
+}
 
-export const getHorseById = async (id) => {
-  const response = await api.get(`/caballos/${id}`);
-  return response.data;
-};
+export async function getHorseById(id) {
+  const { data } = await api.get(`/horses/${id}`);
+  return data;
+}
 
-export const createHorse = async (horseData) => {
-  const response = await api.post("/caballos", horseData);
-  return response.data;
-};
+export async function createHorse(payload) {
+  const { data } = await api.post("/horses", payload);
+  return data;
+}
 
-export const updateHorse = async (id, horseData) => {
-  const response = await api.put(`/caballos/${id}`, horseData);
-  return response.data;
-};
+export async function updateHorse(id, payload) {
+  const { data } = await api.put(`/horses/${id}`, payload);
+  return data;
+}
 
-export const deleteHorse = async (id) => {
-  const response = await api.delete(`/caballos/${id}`);
-  return response.data;
-};
+export async function deleteHorse(id) {
+  const { data } = await api.delete(`/horses/${id}`);
+  return data;
+}
 
-export const getMedicalHistory = async (horseId) => {
-  const response = await api.get(`/caballos/${horseId}/historial`);
-  return response.data;
-};
+export async function getHorseMedicalHistory(id) {
+  const { data } = await api.get(`/horses/${id}/medical-history`);
+  return data;
+}
 
-export const createMedicalHistory = async (horseId, historyData) => {
-  const response = await api.post(`/caballos/${horseId}/historial`, historyData);
-  return response.data;
-};
-
-export const deleteMedicalHistory = async (historyId) => {
-  const response = await api.delete(`/caballos/historial/${historyId}`);
-  return response.data;
-};
-
-export const horsesApi = {
-  getHorses,
-  getHorseById,
-  createHorse,
-  updateHorse,
-  deleteHorse,
-  getMedicalHistory,
-  createMedicalHistory,
-  deleteMedicalHistory
-};
+export async function addHorseMedicalRecord(id, payload) {
+  const { data } = await api.post(`/horses/${id}/medical-history`, payload);
+  return data;
+}

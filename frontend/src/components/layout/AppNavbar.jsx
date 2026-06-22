@@ -1,89 +1,66 @@
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Button, Dropdown } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 
 export default function AppNavbar() {
-  const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
-  const handleLogout = () => {
+  const userName = user?.name || user?.nombre || user?.email || "Usuario";
+  const userRole = user?.role || user?.rol || "Usuario";
+
+  function handleLogout() {
     logout();
     navigate("/login");
-  };
+  }
 
   return (
-    <Navbar bg="dark" data-bs-theme="dark" expand="lg" className="shadow-sm">
-      <Container fluid>
-        <Navbar.Brand as={Link} to={isAuthenticated ? "/dashboard" : "/login"}>
-          Caballeriza
-        </Navbar.Brand>
+    <header className="app-navbar">
+      <div>
+        <h6 className="mb-0 fw-bold">Sistema de Gestión de Caballeriza</h6>
+        <small className="text-muted">Panel administrativo</small>
+      </div>
 
-        <Navbar.Toggle aria-controls="main-navbar" />
+      <div className="d-flex align-items-center gap-3">
+        <Button
+          variant="light"
+          className="position-relative rounded-circle border"
+          size="sm"
+          onClick={() => navigate("/alerts")}
+        >
+          <i className="bi bi-bell"></i>
+          <span className="notification-dot"></span>
+        </Button>
 
-        <Navbar.Collapse id="main-navbar">
-          {isAuthenticated && (
-            <Nav className="me-auto">
-              <Nav.Link as={NavLink} to="/dashboard">
-                Dashboard
-              </Nav.Link>
+        <Dropdown align="end">
+          <Dropdown.Toggle variant="light" className="border user-dropdown">
+            <div className="d-flex align-items-center gap-2">
+              <div className="avatar-circle">
+                {userName.charAt(0).toUpperCase()}
+              </div>
 
-              <Nav.Link as={NavLink} to="/caballos">
-                Caballos
-              </Nav.Link>
+              <div className="text-start d-none d-md-block">
+                <div className="small fw-semibold">{userName}</div>
+                <div className="tiny text-muted">{userRole}</div>
+              </div>
+            </div>
+          </Dropdown.Toggle>
 
-              <Nav.Link as={NavLink} to="/personal">
-                Personal
-              </Nav.Link>
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={() => navigate("/dashboard")}>
+              <i className="bi bi-speedometer2 me-2"></i>
+              Dashboard
+            </Dropdown.Item>
 
-              <Nav.Link as={NavLink} to="/reservas">
-                Reservas
-              </Nav.Link>
+            <Dropdown.Divider />
 
-              <Nav.Link as={NavLink} to="/alimentacion">
-                Alimentación
-              </Nav.Link>
-
-              <Nav.Link as={NavLink} to="/inventario">
-                Inventario
-              </Nav.Link>
-
-              <Nav.Link as={NavLink} to="/alertas">
-                Alertas
-              </Nav.Link>
-            </Nav>
-          )}
-
-          <Nav className="ms-auto">
-            {isAuthenticated ? (
-              <NavDropdown
-                title={user?.nombre || user?.name || user?.email || "Usuario"}
-                align="end"
-              >
-                <NavDropdown.ItemText>
-                  <div className="small text-muted">Rol</div>
-                  <strong>{user?.rol || user?.role || "Sin rol"}</strong>
-                </NavDropdown.ItemText>
-
-                <NavDropdown.Divider />
-
-                <NavDropdown.Item onClick={handleLogout}>
-                  Cerrar sesión
-                </NavDropdown.Item>
-              </NavDropdown>
-            ) : (
-              <>
-                <Nav.Link as={NavLink} to="/login">
-                  Iniciar sesión
-                </Nav.Link>
-
-                <Nav.Link as={NavLink} to="/register">
-                  Registro
-                </Nav.Link>
-              </>
-            )}
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+            <Dropdown.Item className="text-danger" onClick={handleLogout}>
+              <i className="bi bi-box-arrow-right me-2"></i>
+              Cerrar sesión
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
+    </header>
   );
 }

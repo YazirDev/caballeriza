@@ -1,21 +1,23 @@
-import { Button } from "react-bootstrap";
-
 export default function EmptyState({
-  title = "No hay información disponible",
-  description = "Cuando existan registros, aparecerán en esta sección.",
+  icon = "bi bi-inbox",
+  title = "No hay información",
+  message = "Cuando existan registros, aparecerán en esta sección.",
   actionLabel,
-  onAction
+  onAction,
 }) {
   return (
-    <div className="text-center bg-light border rounded p-5">
-      <h2 className="h5 mb-2">{title}</h2>
+    <div className="empty-state">
+      <div className="empty-icon">
+        <i className={icon}></i>
+      </div>
 
-      <p className="text-muted mb-4">{description}</p>
+      <h5>{title}</h5>
+      <p>{message}</p>
 
       {actionLabel && (
-        <Button variant="dark" onClick={onAction}>
+        <button className="btn btn-primary-custom" onClick={onAction}>
           {actionLabel}
-        </Button>
+        </button>
       )}
     </div>
   );

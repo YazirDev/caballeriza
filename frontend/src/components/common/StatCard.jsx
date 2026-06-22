@@ -1,26 +1,21 @@
-import { Card } from "react-bootstrap";
-
 export default function StatCard({
   title,
   value,
   subtitle,
-  icon,
-  variant = "dark"
+  icon = "bi bi-graph-up",
+  variant = "default",
 }) {
   return (
-    <Card className="h-100 shadow-sm border-0">
-      <Card.Body>
-        <div className="d-flex justify-content-between align-items-start">
-          <div>
-            <p className="text-muted mb-1">{title}</p>
-            <h3 className={`mb-1 text-${variant}`}>{value}</h3>
+    <div className={`stat-card stat-${variant}`}>
+      <div>
+        <small>{title}</small>
+        <h3>{value}</h3>
+        {subtitle && <p>{subtitle}</p>}
+      </div>
 
-            {subtitle && <small className="text-muted">{subtitle}</small>}
-          </div>
-
-          {icon && <div className="fs-2">{icon}</div>}
-        </div>
-      </Card.Body>
-    </Card>
+      <div className="stat-icon">
+        <i className={icon}></i>
+      </div>
+    </div>
   );
 }

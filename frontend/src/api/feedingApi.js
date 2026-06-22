@@ -1,58 +1,31 @@
 import api from "./axiosConfig";
 
-export const getFeedingPlansByHorse = async (horseId) => {
-  const response = await api.get(`/alimentacion/planes/${horseId}`);
-  return response.data;
-};
+export async function getFeedingPlans() {
+  const { data } = await api.get("/feeding-plans");
+  return data;
+}
 
-export const createFeedingPlan = async (planData) => {
-  const response = await api.post("/alimentacion/planes", planData);
-  return response.data;
-};
+export async function createFeedingPlan(payload) {
+  const { data } = await api.post("/feeding-plans", payload);
+  return data;
+}
 
-export const deleteFeedingPlan = async (id) => {
-  const response = await api.delete(`/alimentacion/planes/${id}`);
-  return response.data;
-};
+export async function updateFeedingPlan(id, payload) {
+  const { data } = await api.put(`/feeding-plans/${id}`, payload);
+  return data;
+}
 
-export const createSupplyRecord = async (supplyData) => {
-  const response = await api.post("/alimentacion/suministros", supplyData);
-  return response.data;
-};
+export async function deleteFeedingPlan(id) {
+  const { data } = await api.delete(`/feeding-plans/${id}`);
+  return data;
+}
 
-export const getSupplyRecordsByHorse = async (horseId) => {
-  const response = await api.get(`/alimentacion/suministros/${horseId}`);
-  return response.data;
-};
+export async function getSupplyRecords() {
+  const { data } = await api.get("/supply-records");
+  return data;
+}
 
-export const getInventory = async () => {
-  const response = await api.get("/alimentacion/inventario");
-  return response.data;
-};
-
-export const createInventoryItem = async (itemData) => {
-  const response = await api.post("/alimentacion/inventario", itemData);
-  return response.data;
-};
-
-export const updateInventoryItem = async (id, itemData) => {
-  const response = await api.put(`/alimentacion/inventario/${id}`, itemData);
-  return response.data;
-};
-
-export const getLowStockItems = async () => {
-  const response = await api.get("/alimentacion/inventario/stock-bajo");
-  return response.data;
-};
-
-export const feedingApi = {
-  getFeedingPlansByHorse,
-  createFeedingPlan,
-  deleteFeedingPlan,
-  createSupplyRecord,
-  getSupplyRecordsByHorse,
-  getInventory,
-  createInventoryItem,
-  updateInventoryItem,
-  getLowStockItems
-};
+export async function createSupplyRecord(payload) {
+  const { data } = await api.post("/supply-records", payload);
+  return data;
+}

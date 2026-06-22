@@ -4,16 +4,16 @@ export default function ConfirmModal({
   show,
   title = "Confirmar acción",
   message = "¿Está seguro de realizar esta acción?",
-  confirmLabel = "Confirmar",
-  cancelLabel = "Cancelar",
+  confirmText = "Confirmar",
+  cancelText = "Cancelar",
   confirmVariant = "danger",
   onConfirm,
-  onClose
+  onClose,
 }) {
   return (
     <Modal show={show} onHide={onClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title className="h5">{title}</Modal.Title>
+        <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
@@ -21,12 +21,12 @@ export default function ConfirmModal({
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
-          {cancelLabel}
+        <Button variant="light" onClick={onClose}>
+          {cancelText}
         </Button>
 
         <Button variant={confirmVariant} onClick={onConfirm}>
-          {confirmLabel}
+          {confirmText}
         </Button>
       </Modal.Footer>
     </Modal>

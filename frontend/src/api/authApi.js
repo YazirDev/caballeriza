@@ -1,16 +1,21 @@
 import api from "./axiosConfig";
 
 export async function loginRequest(credentials) {
-  const { data } = await api.post("/auth/login", credentials);
+  const { data } = await api.post("/auth/login", {
+    username: credentials.username || credentials.email,
+    password: credentials.password,
+  });
+
   return data;
 }
 
 export async function registerRequest(payload) {
-  const { data } = await api.post("/auth/register", payload);
-  return data;
-}
+  const { data } = await api.post("/auth/register", {
+    username: payload.username,
+    password: payload.password,
+    email: payload.email,
+    rol: payload.rol || payload.role,
+  });
 
-export async function getCurrentUserRequest() {
-  const { data } = await api.get("/users/me");
   return data;
 }

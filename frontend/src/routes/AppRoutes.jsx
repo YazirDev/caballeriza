@@ -38,7 +38,7 @@ function PrivateLayout({ children }) {
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -79,7 +79,7 @@ export default function AppRoutes() {
       <Route
         path="/staff"
         element={
-          <RoleRoute allowedRoles={["ADMIN", "ADMINISTRADOR"]}>
+          <RoleRoute allowedRoles={["ADMINISTRADOR", "ADMIN"]}>
             <PrivateLayout>
               <StaffPage />
             </PrivateLayout>
@@ -90,7 +90,7 @@ export default function AppRoutes() {
       <Route
         path="/staff/:id"
         element={
-          <RoleRoute allowedRoles={["ADMIN", "ADMINISTRADOR"]}>
+          <RoleRoute allowedRoles={["ADMINISTRADOR", "ADMIN"]}>
             <PrivateLayout>
               <StaffDetailPage />
             </PrivateLayout>

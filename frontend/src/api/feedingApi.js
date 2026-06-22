@@ -1,31 +1,46 @@
 import api from "./axiosConfig";
 
-export async function getFeedingPlans() {
-  const { data } = await api.get("/feeding-plans");
+function normalizePlanPayload(payload) {
+  return {
+    caballoId: payload.caballoId || payload.horseId,
+    tipoAlimento: payload.tipoAlimento || payload.foodType,
+    cantidad: Number(payload.cantidad || payload.quantity),
+    frecuencia: payload.frecuencia || payload.frequency,
+    observaciones: payload.observaciones || payload.notes || "",
+  };
+}
+
+function normalizeSupplyPayload(payload) {
+  return {
+    caballoId: payload.caballoId || payload.horseId,
+    tipoAlimento: payload.tipoAlimento || payload.foodType,
+    cantidad: Number(payload.cantidad || payload.quantity),
+    fecha: payload.fecha || payload.dateTime || new Date().toISOString(),
+    responsable: payload.responsable || payload.responsible,
+  };
+}
+
+export async function getPlanesByCaballo(caballoId) {
+  const { data } = await api.get(`/alimentacion/planes/${caballoId}`);
   return data;
 }
 
-export async function createFeedingPlan(payload) {
-  const { data } = await api.post("/feeding-plans", payload);
+export async function createPlanAlimentacion(payload) {
+  const { data } = await api.post("/alimentacion/planes", normalizePlanPayload(payload));
   return data;
 }
 
-export async function updateFeedingPlan(id, payload) {
-  const { data } = await api.put(`/feeding-plans/${id}`, payload);
+export async function deletePlanAlimentacion(id) {
+  const { data } = await api.delete(`/alimentacion/planes/${id}`);
   return data;
 }
 
-export async function deleteFeedingPlan(id) {
-  const { data } = await api.delete(`/feeding-plans/${id}`);
+export async function createSuministro(payload) {
+  const { data } = await api.post("/alimentacion/suministros", normalizeSupplyPayload(payload));
   return data;
 }
 
-export async function getSupplyRecords() {
-  const { data } = await api.get("/supply-records");
-  return data;
-}
-
-export async function createSupplyRecord(payload) {
-  const { data } = await api.post("/supply-records", payload);
+export async function getSuministrosByCaballo(caballoId) {
+  const { data } = await api.get(`/alimentacion/suministros/${caballoId}`);
   return data;
 }

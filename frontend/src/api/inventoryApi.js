@@ -1,26 +1,32 @@
 import api from "./axiosConfig";
 
-export async function getInventoryItems() {
-  const { data } = await api.get("/inventory");
+function normalizeInventoryPayload(payload) {
+  return {
+    nombre: payload.nombre || payload.name,
+    tipo: payload.tipo || payload.category,
+    stockActual: Number(payload.stockActual || payload.currentStock),
+    stockMinimo: Number(payload.stockMinimo || payload.minimumStock),
+    unidad: payload.unidad || payload.unit,
+    fechaVencimiento: payload.fechaVencimiento || payload.expirationDate || null,
+  };
+}
+
+export async function getInventario() {
+  const { data } = await api.get("/alimentacion/inventario");
   return data;
 }
 
-export async function createInventoryItem(payload) {
-  const { data } = await api.post("/inventory", payload);
+export async function createInventarioItem(payload) {
+  const { data } = await api.post("/alimentacion/inventario", normalizeInventoryPayload(payload));
   return data;
 }
 
-export async function updateInventoryItem(id, payload) {
-  const { data } = await api.put(`/inventory/${id}`, payload);
+export async function updateInventarioItem(id, payload) {
+  const { data } = await api.put(`/alimentacion/inventario/${id}`, normalizeInventoryPayload(payload));
   return data;
 }
 
-export async function deleteInventoryItem(id) {
-  const { data } = await api.delete(`/inventory/${id}`);
-  return data;
-}
-
-export async function getLowStockItems() {
-  const { data } = await api.get("/inventory/low-stock");
+export async function getStockBajo() {
+  const { data } = await api.get("/alimentacion/inventario/stock-bajo");
   return data;
 }

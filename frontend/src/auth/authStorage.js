@@ -18,8 +18,8 @@ export function saveUser(user) {
 }
 
 export function getUser() {
-  const raw = localStorage.getItem(USER_KEY);
-  return raw ? JSON.parse(raw) : null;
+  const rawUser = localStorage.getItem(USER_KEY);
+  return rawUser ? JSON.parse(rawUser) : null;
 }
 
 export function removeUser() {

@@ -17,5 +17,5 @@ export default function StatCard({
         <i className={icon}></i>
       </div>
     </div>
-  );
+  );  
 }

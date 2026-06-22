@@ -5,11 +5,11 @@ const initialState = {
   horseId: "",
   foodType: "",
   quantity: "",
-  dateTime: "",
-  responsible: "",
+  frequency: "Mañana y noche",
+  notes: "",
 };
 
-export default function SupplyForm({
+export default function FeedingPlanForm({
   show,
   onClose,
   onSubmit,
@@ -38,7 +38,7 @@ export default function SupplyForm({
     <Modal show={show} onHide={onClose} centered>
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
-          <Modal.Title>Registrar suministro</Modal.Title>
+          <Modal.Title>Nuevo plan de alimentación</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
@@ -64,12 +64,12 @@ export default function SupplyForm({
 
             <Col md={8}>
               <Form.Group>
-                <Form.Label>Alimento</Form.Label>
+                <Form.Label>Tipo de alimento</Form.Label>
                 <Form.Control
                   name="foodType"
                   value={form.foodType}
                   onChange={handleChange}
-                  placeholder="Ej: Avena premium"
+                  placeholder="Ej: Heno de alfalfa"
                   required
                 />
               </Form.Group>
@@ -93,26 +93,31 @@ export default function SupplyForm({
 
             <Col md={12}>
               <Form.Group>
-                <Form.Label>Fecha y hora</Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  name="dateTime"
-                  value={form.dateTime}
+                <Form.Label>Frecuencia</Form.Label>
+                <Form.Select
+                  name="frequency"
+                  value={form.frequency}
                   onChange={handleChange}
-                  required
-                />
+                >
+                  <option value="Mañana">Mañana</option>
+                  <option value="Tarde">Tarde</option>
+                  <option value="Noche">Noche</option>
+                  <option value="Mañana y noche">Mañana y noche</option>
+                  <option value="Tres veces al día">Tres veces al día</option>
+                </Form.Select>
               </Form.Group>
             </Col>
 
             <Col md={12}>
               <Form.Group>
-                <Form.Label>Responsable</Form.Label>
+                <Form.Label>Observaciones</Form.Label>
                 <Form.Control
-                  name="responsible"
-                  value={form.responsible}
+                  as="textarea"
+                  rows={3}
+                  name="notes"
+                  value={form.notes}
                   onChange={handleChange}
-                  placeholder="Ej: Carlos Ruiz"
-                  required
+                  placeholder="Indicaciones especiales"
                 />
               </Form.Group>
             </Col>
@@ -125,7 +130,7 @@ export default function SupplyForm({
           </Button>
 
           <Button className="btn-primary-custom" type="submit" disabled={loading}>
-            {loading ? "Guardando..." : "Guardar suministro"}
+            {loading ? "Guardando..." : "Guardar plan"}
           </Button>
         </Modal.Footer>
       </Form>

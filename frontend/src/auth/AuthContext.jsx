@@ -1,12 +1,6 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import { loginRequest, registerRequest } from "../api/authApi";
-import {
-  clearAuthStorage,
-  getToken,
-  getUser,
-  saveToken,
-  saveUser,
-} from "./authStorage";
+import { clearAuthStorage, getToken, getUser, saveToken, saveUser } from "./authStorage";
 
 const AuthContext = createContext(null);
 
@@ -18,17 +12,19 @@ export function AuthProvider({ children }) {
 
   async function login(credentials) {
     const response = await loginRequest(credentials);
-
     const jwt = response.token || response.accessToken || response.jwt;
-    const userData = response.user || response.usuario || response;
+    const userData = response.user || response.usuario || {
+      username: credentials.username || credentials.email,
+      email: credentials.email || "",
+      rol: response.rol || response.role || "ADMINISTRADOR",
+    };
 
     if (!jwt) {
-      throw new Error("El backend no devolvió un token JWT.");
+      throw new Error("El backend no devolvió token JWT");
     }
 
     saveToken(jwt);
     saveUser(userData);
-
     setToken(jwt);
     setUser(userData);
 

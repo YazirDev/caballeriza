@@ -1,31 +1,65 @@
 # Sistema de Gestión de Caballeriza
 
-Sistema web para administrar caballos, personal, reservas, alimentación y alertas.
-Desarrollado para el curso EIF209 — Programación IV, Universidad Nacional Sede Chorotega.
+Sistema web para administrar caballos, personal, reservas, alimentación y alertas.  
+Desarrollado para el curso **EIF209 — Programación IV**, Universidad Nacional Sede Regional Chorotega, Campus Liberia. Primer Semestre 2026.
 
 ---
 
 ## Tecnologías
 
-- **Backend:** Spring Boot 3.2.5 (Java 21)
-- **Base de datos:** PostgreSQL 17
-- **Seguridad:** Spring Security + JWT
-- **Documentación API:** Swagger / OpenAPI 3
-- **Frontend:** React (desarrollado por otro equipo)
+| Capa | Tecnología |
+|------|-----------|
+| Backend | Spring Boot 3.2.5 (Java 21) |
+| Base de datos | PostgreSQL 17 |
+| Seguridad | Spring Security + JWT |
+| Documentación API | Swagger / OpenAPI 3 |
+| Frontend | React + React Router + Bootstrap Icons |
+
+---
+
+## Estructura del repositorio
+
+```
+caballeriza/
+├── backend/
+│   ├── src/main/java/com/caballeriza/
+│   │   ├── config/          ← SecurityConfig, SwaggerConfig, CorsConfig
+│   │   ├── controller/      ← Endpoints REST
+│   │   ├── service/         ← Lógica de negocio
+│   │   ├── repository/      ← Acceso a base de datos (JPA)
+│   │   ├── model/           ← Entidades JPA
+│   │   ├── dto/             ← Objetos de transferencia de datos
+│   │   ├── security/        ← Filtros JWT y autenticación
+│   │   └── exception/       ← Manejo global de errores
+│   ├── src/main/resources/
+│   │   └── application.properties
+│   └── pom.xml
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── layout/
+│   │   │       └── Sidebar.jsx
+│   │   └── pages/           ← Dashboard, Caballos, Personal, Reservas, Alimentación, Inventario, Alertas
+│   └── package.json
+└── README.md
+```
 
 ---
 
 ## Requisitos previos
 
-- Java 21 (Temurin 21) — [Descargar aquí](https://adoptium.net/temurin/releases/?version=21)
-- Maven 3.9+
-- PostgreSQL 17 instalado y corriendo
+Instalar las siguientes herramientas antes de continuar:
+
+- **Java 21** (Temurin 21) → https://adoptium.net/temurin/releases/?version=21
+- **Maven 3.9+** → https://maven.apache.org/download.cgi
+- **Node.js 18+** → https://nodejs.org
+- **PostgreSQL 17** → https://www.postgresql.org/download/
 
 ---
 
-## Configuración de la base de datos
+## 1. Configurar la base de datos
 
-Abrir pgAdmin y ejecutar:
+Abrir pgAdmin (o psql) y ejecutar estos comandos:
 
 ```sql
 CREATE DATABASE caballeriza;
@@ -34,9 +68,9 @@ GRANT ALL PRIVILEGES ON DATABASE caballeriza TO admin;
 ALTER DATABASE caballeriza OWNER TO admin;
 ```
 
-Las tablas se crean automáticamente al arrancar el backend. No se necesita correr ningún SQL adicional.
+Las tablas se crean automáticamente cuando el backend arranca por primera vez. **No se necesita correr ningún SQL adicional.**
 
-**Datos de conexión:**
+Datos de conexión que usa el backend:
 
 | Campo | Valor |
 |-------|-------|
@@ -48,18 +82,18 @@ Las tablas se crean automáticamente al arrancar el backend. No se necesita corr
 
 ---
 
-## Cómo arrancar el backend
+## 2. Arrancar el backend
 
-### Opción 1 — Si Java 21 está configurado como default
+### Opción A — Java 21 configurado como versión por defecto
 
 ```bash
 cd backend
 mvn spring-boot:run -DskipTests
 ```
 
-### Opción 2 — Si el sistema tiene múltiples versiones de Java (Windows)
+### Opción B — El sistema tiene varias versiones de Java instaladas (Windows)
 
-Abrir PowerShell y correr:
+Abrir PowerShell y ejecutar:
 
 ```powershell
 $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
@@ -68,44 +102,64 @@ cd backend
 mvn spring-boot:run -DskipTests
 ```
 
-### Verificar que está corriendo
+Ajustar la ruta de `JAVA_HOME` según dónde esté instalado Java 21 en el equipo.
+
+### Opción B — Mac / Linux con múltiples versiones de Java
+
+```bash
+export JAVA_HOME=$(/usr/libexec/java_home -v 21)   # Mac
+# o en Linux:
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+
+cd backend
+mvn spring-boot:run -DskipTests
+```
+
+### Verificar que el backend está corriendo
 
 Abrir en el navegador:
+
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
 
-Si carga la interfaz de Swagger, el backend está funcionando correctamente.
+Si carga la interfaz de Swagger, el backend funciona correctamente.
 
 ---
 
-## Documentación de la API
+## 3. Arrancar el frontend
 
-Toda la API está documentada en Swagger:
-```
-http://localhost:8080/swagger-ui/index.html
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-**URL base:**
+El frontend queda disponible en:
+
 ```
-http://localhost:8080
+http://localhost:5173
 ```
+
+> Si el frontend corre en un puerto diferente al 5173 o 3000, avisar para actualizar la configuración de CORS en el backend (`application.properties`).
 
 ---
 
-## Autenticación
+## 4. Autenticación
 
-Todos los endpoints excepto `/api/auth/**` requieren un token JWT en el header de cada request:
+Todos los endpoints excepto `/api/auth/**` requieren un token JWT en cada request:
 
 ```
 Authorization: Bearer <token>
 ```
 
-### Registrar usuario
+### Registrar un usuario
 
 ```
 POST /api/auth/register
 ```
+
+Body JSON:
 
 ```json
 {
@@ -116,11 +170,15 @@ POST /api/auth/register
 }
 ```
 
-### Login
+Roles disponibles: `ADMINISTRADOR`, `VETERINARIO`, `CUIDADOR`, `CLIENTE`
+
+### Iniciar sesión (login)
 
 ```
 POST /api/auth/login
 ```
+
+Body JSON:
 
 ```json
 {
@@ -129,30 +187,70 @@ POST /api/auth/login
 }
 ```
 
-Ambos endpoints devuelven un token JWT que debe enviarse en todos los requests siguientes.
+Ambos endpoints devuelven un token JWT. Copiar ese token y enviarlo en el header `Authorization: Bearer <token>` en todos los requests siguientes.
 
-**Roles disponibles:** `ADMINISTRADOR`, `CUIDADOR`, `VETERINARIO`, `CLIENTE`
+### Usuarios de prueba sugeridos
+
+Registrar estos usuarios desde Swagger para probar cada rol:
+
+| Username | Contraseña | Rol |
+|----------|-----------|-----|
+| admin1 | admin123 | ADMINISTRADOR |
+| vet1 | vet123 | VETERINARIO |
+| cuidador1 | cuidador123 | CUIDADOR |
+| cliente1 | cliente123 | CLIENTE |
 
 ---
 
-## Endpoints de la API
+## 5. Documentación de la API (Swagger)
+
+Toda la API está documentada con Swagger / OpenAPI 3:
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
+Para probar endpoints autenticados desde Swagger:
+
+1. Hacer login con `POST /api/auth/login`.
+2. Copiar el token JWT de la respuesta.
+3. Hacer clic en el botón **Authorize** (candado) en la esquina superior derecha de Swagger.
+4. Pegar el token con el formato `Bearer <token>`.
+5. Todos los endpoints quedan autenticados durante la sesión.
+
+URL base de la API:
+
+```
+http://localhost:8080
+```
+
+---
+
+## 6. Endpoints disponibles
+
+### Autenticación `/api/auth`
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/api/auth/register` | Registrar usuario |
+| POST | `/api/auth/login` | Iniciar sesión — devuelve JWT |
+
+---
 
 ### Caballos `/api/caballos`
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | GET | `/api/caballos` | Listar todos los caballos |
-| GET | `/api/caballos/{id}` | Obtener caballo por ID |
 | POST | `/api/caballos` | Crear caballo |
+| GET | `/api/caballos/{id}` | Ver caballo por ID |
 | PUT | `/api/caballos/{id}` | Actualizar caballo |
 | DELETE | `/api/caballos/{id}` | Eliminar caballo |
 | GET | `/api/caballos/{id}/historial` | Ver historial médico |
 | POST | `/api/caballos/{id}/historial` | Agregar registro médico |
-| DELETE | `/api/caballos/historial/{historialId}` | Eliminar registro médico |
 
-**Campos caballo:** `nombre`, `identificador`, `edad`, `raza`, `sexo` (MACHO/HEMBRA), `peso`, `fotoUrl`
-
-**Campos historial:** `tipo` (VACUNA/TRATAMIENTO/ALERGIA/OBSERVACION), `descripcion`, `responsable`, `fecha`, `fechaVencimiento`
+Campos del caballo: `nombre`, `identificador`, `edad`, `raza`, `sexo`, `peso`, `foto` (opcional).  
+Campos del historial médico: `tipo` (vacuna / tratamiento / alergia / observación), `fecha`, `descripcion`, `responsable`.
 
 ---
 
@@ -161,16 +259,14 @@ Ambos endpoints devuelven un token JWT que debe enviarse en todos los requests s
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | GET | `/api/personal` | Listar empleados |
-| GET | `/api/personal/{id}` | Obtener empleado por ID |
 | POST | `/api/personal` | Crear empleado |
+| GET | `/api/personal/{id}` | Ver empleado |
 | PUT | `/api/personal/{id}` | Actualizar empleado |
 | DELETE | `/api/personal/{id}` | Eliminar empleado |
 | GET | `/api/personal/{id}/turnos` | Ver turnos del empleado |
-| POST | `/api/personal/{id}/turnos` | Asignar turno |
-| GET | `/api/personal/{id}/tareas` | Ver tareas del empleado |
-| POST | `/api/personal/{id}/tareas` | Asignar tarea |
+| POST | `/api/personal/{id}/turnos` | Asignar turno/tarea |
 
-**Roles de empleado:** `VETERINARIO`, `POTRADOR`, `CUIDADOR`, `ADMINISTRADOR`
+Roles de empleado: `VETERINARIO`, `POTRADOR`, `CUIDADOR`, `ADMINISTRADOR`.
 
 ---
 
@@ -179,16 +275,12 @@ Ambos endpoints devuelven un token JWT que debe enviarse en todos los requests s
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | GET | `/api/reservas` | Listar todas las reservas |
-| GET | `/api/reservas/{id}` | Obtener reserva por ID |
 | POST | `/api/reservas` | Crear reserva |
-| PUT | `/api/reservas/{id}` | Actualizar reserva |
-| PUT | `/api/reservas/{id}/cancelar` | Cancelar reserva |
-| DELETE | `/api/reservas/{id}` | Eliminar reserva |
-| GET | `/api/reservas/tipo/{tipo}` | Filtrar por tipo |
+| GET | `/api/reservas/{id}` | Ver reserva |
+| PUT | `/api/reservas/{id}` | Editar reserva |
+| DELETE | `/api/reservas/{id}` | Cancelar reserva |
 
-**Tipos de reserva:** `VETERINARIO`, `MONTA`, `PASEO`, `ENTRENAMIENTO`
-
-**Estados:** `PENDIENTE`, `CONFIRMADA`, `CANCELADA`
+Tipos de reserva: `VETERINARIO`, `MONTA`, `PASEO`, `ENTRENAMIENTO`.
 
 ---
 
@@ -196,7 +288,7 @@ Ambos endpoints devuelven un token JWT que debe enviarse en todos los requests s
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| GET | `/api/alimentacion/planes/{caballoId}` | Planes de alimentación del caballo |
+| GET | `/api/alimentacion/planes/{caballoId}` | Ver planes de un caballo |
 | POST | `/api/alimentacion/planes` | Crear plan de alimentación |
 | DELETE | `/api/alimentacion/planes/{id}` | Eliminar plan |
 | POST | `/api/alimentacion/suministros` | Registrar suministro |
@@ -206,7 +298,7 @@ Ambos endpoints devuelven un token JWT que debe enviarse en todos los requests s
 | PUT | `/api/alimentacion/inventario/{id}` | Actualizar item |
 | GET | `/api/alimentacion/inventario/stock-bajo` | Ver items con stock bajo |
 
-**Tipos de insumo:** `ALIMENTO`, `MEDICINA`, `OTRO`
+Tipos de insumo: `ALIMENTO`, `MEDICINA`, `OTRO`.
 
 ---
 
@@ -219,11 +311,27 @@ Ambos endpoints devuelven un token JWT que debe enviarse en todos los requests s
 | PUT | `/api/alertas/{id}/leer` | Marcar alerta como leída |
 | POST | `/api/alertas/generar` | Generar alertas automáticas |
 
-**Tipos de alerta:** `VACUNA_PROXIMA`, `TRATAMIENTO_VENCIDO`, `STOCK_BAJO`
+Tipos de alerta generadas automáticamente: `VACUNA_PROXIMA`, `TRATAMIENTO_VENCIDO`, `STOCK_BAJO`.
 
 ---
 
-## CORS configurado para
+## 7. Navegación del frontend
+
+El sidebar del frontend expone estas secciones:
+
+| Sección | Ruta |
+|---------|------|
+| Dashboard | `/dashboard` |
+| Caballos | `/horses` |
+| Personal | `/staff` |
+| Reservas | `/reservations` |
+| Alimentación | `/feeding` |
+| Inventario | `/inventory` |
+| Alertas | `/alerts` |
+
+---
+
+## 8. CORS
 
 El backend acepta requests desde:
 
@@ -232,40 +340,74 @@ http://localhost:3000
 http://localhost:5173
 ```
 
-Si el frontend corre en otro puerto, avisar para actualizar la configuración.
+Para agregar otro origen, editar `backend/src/main/resources/application.properties`:
 
----
-
-## Estructura del proyecto
-
-```
-caballeriza/
-├── backend/
-│   ├── src/main/java/com/caballeriza/
-│   │   ├── config/          ← SecurityConfig, SwaggerConfig
-│   │   ├── controller/      ← REST endpoints
-│   │   ├── service/         ← lógica de negocio
-│   │   ├── repository/      ← acceso a BD
-│   │   ├── model/           ← entidades JPA
-│   │   ├── dto/             ← objetos de transferencia
-│   │   ├── security/        ← JWT, filtros
-│   │   └── exception/       ← manejo de errores
-│   ├── src/main/resources/
-│   │   └── application.properties
-│   └── pom.xml
-├── frontend/                ← React (otro equipo)
-└── README.md
+```properties
+spring.web.cors.allowed-origins=http://localhost:3000,http://localhost:5173
 ```
 
 ---
 
-## Credenciales de prueba
+## 9. Variables de configuración (application.properties)
 
-Registrar estos usuarios desde Swagger para probar cada rol:
+```properties
+# Base de datos
+spring.datasource.url=jdbc:postgresql://localhost:5432/caballeriza
+spring.datasource.username=admin
+spring.datasource.password=admin123
 
-| Usuario | Contraseña | Rol |
-|---------|------------|-----|
-| admin1 | admin123 | ADMINISTRADOR |
-| vet1 | vet123 | VETERINARIO |
-| cuidador1 | cuidador123 | CUIDADOR |
-| cliente1 | cliente123 | CLIENTE |
+# JWT — cambiar en producción
+jwt.secret=caballerizaSecretKey2026EIF209ProgramacionIVUNAChorotega1234567890AB
+jwt.expiration=86400000   # 24 horas en milisegundos
+
+# Puerto del servidor
+server.port=8080
+```
+
+---
+
+## 10. Migración a React Native (móvil)
+
+La API REST está diseñada para ser consumida desde cualquier cliente. Para portar el frontend a React Native:
+
+1. La lógica de llamadas a la API (fetch / axios) se reutiliza sin cambios.
+2. Reemplazar componentes HTML (`<div>`, `<input>`, etc.) por sus equivalentes de React Native (`<View>`, `<TextInput>`, etc.).
+3. Reemplazar React Router por React Navigation.
+4. El token JWT se guarda en `AsyncStorage` en lugar de `localStorage`.
+5. Los endpoints no cambian — el backend es el mismo.
+
+Ejemplo de login desde React Native:
+
+```javascript
+const login = async (username, password) => {
+  const response = await fetch('http://<IP_DEL_SERVIDOR>:8080/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+  const data = await response.json();
+  await AsyncStorage.setItem('token', data.token);
+};
+```
+
+Reemplazar `<IP_DEL_SERVIDOR>` por la IP local de la máquina donde corre el backend (no usar `localhost` desde el emulador Android; usar `10.0.2.2` para el emulador o la IP real para dispositivo físico).
+
+---
+
+## Módulos cubiertos por el sistema
+
+1. Gestión de caballos con historial médico
+2. Gestión de personal con turnos y tareas
+3. Calendario y reservas (veterinario, monta, paseo, entrenamiento)
+4. Planes de alimentación e inventario de insumos
+5. Alertas automáticas (stock bajo, vacunas próximas, tratamientos vencidos)
+6. Autenticación con JWT y control de acceso por roles
+
+---
+
+## Curso
+
+Universidad Nacional — Sede Regional Chorotega, Campus Liberia  
+Ingeniería en Sistemas de Información  
+Programación IV (EIF209) — Primer Semestre 2026  
+Profesor: Darin Mauricio Gamboa Vasquez

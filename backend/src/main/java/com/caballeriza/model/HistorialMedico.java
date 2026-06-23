@@ -2,6 +2,8 @@ package com.caballeriza.model;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,7 +30,7 @@ public class HistorialMedico {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "caballo_id", nullable = false)
     private Caballo caballo;

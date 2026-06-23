@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "caballos")
 @Data
@@ -30,10 +32,10 @@ public class Caballo {
 
     private Double peso;
     private String fotoUrl;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "caballo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HistorialMedico> historialMedico;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "caballo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlanAlimentacion> planesAlimentacion;
 

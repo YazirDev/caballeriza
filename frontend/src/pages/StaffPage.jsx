@@ -21,7 +21,7 @@ export default function StaffPage() {
 
   useEffect(() => {
     loadPersonal();
-  }, []);
+  }, [location.pathname]);
 
   async function loadPersonal() {
     setLoading(true);

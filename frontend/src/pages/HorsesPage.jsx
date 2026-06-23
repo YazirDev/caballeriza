@@ -21,7 +21,7 @@ export default function HorsesPage() {
 
   useEffect(() => {
     loadCaballos();
-  }, []);
+  }, [location.pathname]);
 
   async function loadCaballos() {
     setLoading(true);

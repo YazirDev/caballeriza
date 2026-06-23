@@ -15,7 +15,7 @@ export default function ReservationsPage() {
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState("");
 
-  useEffect(() => { loadPage(); }, []);
+  useEffect(() => { loadPage(); }, [location.pathname]);
 
   async function loadPage() {
     setLoading(true);

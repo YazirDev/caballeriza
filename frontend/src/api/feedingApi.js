@@ -1,22 +1,28 @@
 import api from "./axiosConfig";
 
+// PlanAlimentacion model fields: caballo, tipoAlimento, cantidad, unidad, frecuencia, notas
 function normalizePlanPayload(payload) {
   return {
-    caballo: { id: Number(payload.caballoId || payload.horseId) },  // FIX: objeto con id
+    caballo:      { id: Number(payload.caballoId || payload.horseId) },
     tipoAlimento: payload.tipoAlimento || payload.foodType,
-    cantidad: Number(payload.cantidad || payload.quantity),
-    frecuencia: payload.frecuencia || payload.frequency,
-    observaciones: payload.observaciones || payload.notes || "",
+    cantidad:     Number(payload.cantidad || payload.quantity),
+    frecuencia:   payload.frecuencia || payload.frequency,
+    notas:        payload.notas || payload.notes || payload.observaciones || "",
   };
 }
 
+// Suministro model fields: caballo, fecha (LocalDate), tipo, cantidad, unidad
 function normalizeSupplyPayload(payload) {
+  // dateTime comes as "2024-06-22T10:00" → take only date part for LocalDate
+  const rawDate = payload.fecha || payload.dateTime || "";
+  const fecha   = rawDate.includes("T") ? rawDate.split("T")[0] : rawDate;
+
   return {
-    caballo: { id: Number(payload.caballoId || payload.horseId) },  // FIX: objeto con id
-    tipoAlimento: payload.tipoAlimento || payload.foodType,
+    caballo:  { id: Number(payload.caballoId || payload.horseId) },
+    tipo:     payload.tipo || payload.foodType || payload.tipoAlimento,
     cantidad: Number(payload.cantidad || payload.quantity),
-    fecha: payload.fecha || payload.dateTime || new Date().toISOString(),
-    responsable: payload.responsable || payload.responsible,
+    unidad:   payload.unidad || payload.unit || "kg",
+    fecha:    fecha || new Date().toISOString().split("T")[0],
   };
 }
 

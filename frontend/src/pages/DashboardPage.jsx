@@ -11,58 +11,45 @@ import Loading from "../components/common/Loading";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    caballos: 0,
-    personal: 0,
-    reservas: 0,
-    alertas: 0,
-    stockBajo: 0,
-  });
-
+  const [stats, setStats] = useState({ caballos: 0, personal: 0, reservas: 0, alertas: 0, stockBajo: 0 });
   const [reservas, setReservas] = useState([]);
   const [alertas, setAlertas] = useState([]);
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
+  useEffect(() => { loadDashboard(); }, []);
 
   async function loadDashboard() {
     setLoading(true);
-
     try {
-      const [caballosData, personalData, reservasData, alertasData, inventarioData] =
-        await Promise.allSettled([
-          getCaballos(),
-          getPersonal(),
-          getReservas(),
-          getAlertas(),
-          getInventario(),
-        ]);
+      const [caballosR, personalR, reservasR, alertasR, inventarioR] = await Promise.allSettled([
+        getCaballos(), getPersonal(), getReservas(), getAlertas(), getInventario(),
+      ]);
 
-      const caballos = caballosData.status === "fulfilled" ? caballosData.value : [];
-      const personal = personalData.status === "fulfilled" ? personalData.value : [];
-      const reservasList = reservasData.status === "fulfilled" ? reservasData.value : [];
-      const alertasList = alertasData.status === "fulfilled" ? alertasData.value : [];
-      const inventario = inventarioData.status === "fulfilled" ? inventarioData.value : [];
+      const caballos    = caballosR.status    === "fulfilled" ? caballosR.value    : [];
+      const personal    = personalR.status    === "fulfilled" ? personalR.value    : [];
+      const reservasList= reservasR.status    === "fulfilled" ? reservasR.value    : [];
+      const alertasList = alertasR.status     === "fulfilled" ? alertasR.value     : [];
+      const inventario  = inventarioR.status  === "fulfilled" ? inventarioR.value  : [];
 
       setStats({
-        caballos: caballos.length || 0,
-        personal: personal.length || 0,
-        reservas: reservasList.length || 0,
-        alertas: alertasList.filter((item) => !item.leida && !item.read).length || alertasList.length || 0,
-        stockBajo: inventario.filter((item) => Number(item.stockActual || item.currentStock || 0) <= Number(item.stockMinimo || item.minimumStock || 0)).length,
+        caballos:  Array.isArray(caballos)     ? caballos.length  : 0,
+        personal:  Array.isArray(personal)     ? personal.length  : 0,
+        reservas:  Array.isArray(reservasList) ? reservasList.length : 0,
+        // FIX: backend Alerta uses 'leida' (boolean), not 'read'
+        alertas:   Array.isArray(alertasList)  ? alertasList.filter((a) => !a.leida).length : 0,
+        // FIX: backend Inventario uses 'cantidad' not 'stockActual'
+        stockBajo: Array.isArray(inventario)
+          ? inventario.filter((i) => Number(i.cantidad || 0) <= Number(i.stockMinimo || 0)).length
+          : 0,
       });
 
-      setReservas(reservasList.slice(0, 5));
-      setAlertas(alertasList.slice(0, 4));
+      setReservas(Array.isArray(reservasList) ? reservasList.slice(0, 5) : []);
+      setAlertas(Array.isArray(alertasList)   ? alertasList.slice(0, 4) : []);
     } finally {
       setLoading(false);
     }
   }
 
-  if (loading) {
-    return <Loading text="Cargando dashboard..." />;
-  }
+  if (loading) return <Loading text="Cargando dashboard..." />;
 
   return (
     <>
@@ -110,7 +97,6 @@ export default function DashboardPage() {
                   <span>{stats.caballos} caballos disponibles en el sistema</span>
                 </div>
               </div>
-
               <div className="activity-item">
                 <i className="bi bi-people"></i>
                 <div>
@@ -118,7 +104,6 @@ export default function DashboardPage() {
                   <span>{stats.personal} empleados vinculados a la caballeriza</span>
                 </div>
               </div>
-
               <div className="activity-item">
                 <i className="bi bi-box-seam"></i>
                 <div>
@@ -131,7 +116,6 @@ export default function DashboardPage() {
 
           <div className="card-soft">
             <h5 className="fw-bold mb-3">Alertas recientes</h5>
-
             {alertas.length === 0 ? (
               <p className="text-muted mb-0">No hay alertas registradas.</p>
             ) : (
@@ -139,8 +123,9 @@ export default function DashboardPage() {
                 <div key={alerta.id} className="dashboard-alert">
                   <i className="bi bi-exclamation-triangle"></i>
                   <div>
-                    <strong>{alerta.titulo || alerta.title || alerta.tipo || "Alerta"}</strong>
-                    <p>{alerta.descripcion || alerta.description || alerta.mensaje || "Revisar alerta del sistema"}</p>
+                    {/* FIX: backend uses 'tipo' and 'mensaje', not 'titulo'/'descripcion' */}
+                    <strong>{alerta.tipo || "Alerta"}</strong>
+                    <p>{alerta.mensaje || "Revisar alerta del sistema"}</p>
                   </div>
                 </div>
               ))
@@ -151,17 +136,17 @@ export default function DashboardPage() {
         <Col lg={4}>
           <div className="card-soft mb-4">
             <h5 className="fw-bold mb-3">Próximas Reservas</h5>
-
             {reservas.length === 0 ? (
               <p className="text-muted mb-0">No hay reservas próximas.</p>
             ) : (
               reservas.map((reserva) => (
                 <div key={reserva.id} className="reservation-mini">
                   <div>
-                    <strong>{reserva.caballo?.nombre || reserva.caballoNombre || reserva.cliente || "Reserva"}</strong>
+                    {/* FIX: backend Reserva has caballo object and tipo, no 'cliente' field */}
+                    <strong>{reserva.caballo?.nombre || "Reserva"}</strong>
                     <span>{reserva.tipo || "Actividad"}</span>
                   </div>
-                  <small>{reserva.fecha || ""}</small>
+                  <small>{reserva.fecha ? new Date(reserva.fecha).toLocaleDateString("es-CR") : ""}</small>
                 </div>
               ))
             )}

@@ -7,7 +7,7 @@ function normalizeHorsePayload(payload) {
     identificador: payload.identificador || payload.identifier,
     edad: Number(payload.edad || payload.age),
     raza: payload.raza || payload.breed,
-    sexo: sexoRaw.toUpperCase(),        // FIX: "Macho" → "MACHO"
+    sexo: sexoRaw.toUpperCase(), // MACHO / HEMBRA
     peso: Number(payload.peso || payload.weight),
     fotoUrl: payload.fotoUrl || payload.photoUrl || "",
   };
@@ -15,7 +15,7 @@ function normalizeHorsePayload(payload) {
 
 function normalizeMedicalPayload(payload) {
   return {
-    tipo: (payload.tipo || payload.type || "").toUpperCase(),  // FIX: enum
+    tipo: (payload.tipo || payload.type || "").toUpperCase(),
     descripcion: payload.descripcion || payload.description || payload.title,
     responsable: payload.responsable || payload.responsible,
     fecha: payload.fecha || payload.date,

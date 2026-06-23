@@ -2,35 +2,24 @@ import { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
 const initialState = {
-  horseId: "",
-  foodType: "",
-  quantity: "",
-  dateTime: "",
+  horseId:     "",
+  foodType:    "",   // maps to 'tipo' in backend
+  quantity:    "",
+  date:        "",   // LocalDate → just date, no time
   responsible: "",
 };
 
-export default function SupplyForm({
-  show,
-  onClose,
-  onSubmit,
-  horses = [],
-  loading = false,
-}) {
+export default function SupplyForm({ show, onClose, onSubmit, horses = [], loading = false }) {
   const [form, setForm] = useState(initialState);
 
-  function handleChange(event) {
-    const { name, value } = event.target;
+  function handleChange(e) {
+    const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
-
-    onSubmit({
-      ...form,
-      quantity: Number(form.quantity),
-    });
-
+  function handleSubmit(e) {
+    e.preventDefault();
+    onSubmit({ ...form, quantity: Number(form.quantity) });
     setForm(initialState);
   }
 
@@ -46,12 +35,7 @@ export default function SupplyForm({
             <Col md={12}>
               <Form.Group>
                 <Form.Label>Caballo</Form.Label>
-                <Form.Select
-                  name="horseId"
-                  value={form.horseId}
-                  onChange={handleChange}
-                  required
-                >
+                <Form.Select name="horseId" value={form.horseId} onChange={handleChange} required>
                   <option value="">Seleccione un caballo</option>
                   {horses.map((horse) => (
                     <option key={horse.id} value={horse.id}>
@@ -64,7 +48,7 @@ export default function SupplyForm({
 
             <Col md={8}>
               <Form.Group>
-                <Form.Label>Alimento</Form.Label>
+                <Form.Label>Alimento / tipo</Form.Label>
                 <Form.Control
                   name="foodType"
                   value={form.foodType}
@@ -77,7 +61,7 @@ export default function SupplyForm({
 
             <Col md={4}>
               <Form.Group>
-                <Form.Label>Cantidad</Form.Label>
+                <Form.Label>Cantidad (kg)</Form.Label>
                 <Form.Control
                   type="number"
                   step="0.1"
@@ -85,7 +69,6 @@ export default function SupplyForm({
                   name="quantity"
                   value={form.quantity}
                   onChange={handleChange}
-                  placeholder="Kg"
                   required
                 />
               </Form.Group>
@@ -93,14 +76,9 @@ export default function SupplyForm({
 
             <Col md={12}>
               <Form.Group>
-                <Form.Label>Fecha y hora</Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  name="dateTime"
-                  value={form.dateTime}
-                  onChange={handleChange}
-                  required
-                />
+                <Form.Label>Fecha</Form.Label>
+                {/* FIX: type="date" — backend expects LocalDate, not LocalDateTime */}
+                <Form.Control type="date" name="date" value={form.date} onChange={handleChange} required />
               </Form.Group>
             </Col>
 
@@ -120,10 +98,7 @@ export default function SupplyForm({
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="light" onClick={onClose}>
-            Cancelar
-          </Button>
-
+          <Button variant="light" onClick={onClose}>Cancelar</Button>
           <Button className="btn-primary-custom" type="submit" disabled={loading}>
             {loading ? "Guardando..." : "Guardar suministro"}
           </Button>

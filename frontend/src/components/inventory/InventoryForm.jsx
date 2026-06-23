@@ -2,46 +2,37 @@ import { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
 const initialState = {
-  name: "",
-  category: "Alimento",
+  name:         "",
+  category:     "ALIMENTO",  // FIX: uppercase enum
   currentStock: "",
   minimumStock: "",
-  unit: "kg",
-  expirationDate: "",
+  unit:         "kg",
 };
 
-export default function InventoryForm({
-  show,
-  onClose,
-  onSubmit,
-  item,
-  loading = false,
-}) {
+export default function InventoryForm({ show, onClose, onSubmit, item, loading = false }) {
   const [form, setForm] = useState(initialState);
 
   useEffect(() => {
     if (item) {
       setForm({
-        name: item.name || item.nombre || "",
-        category: item.category || item.categoria || "Alimento",
-        currentStock: item.currentStock || item.stockActual || "",
-        minimumStock: item.minimumStock || item.stockMinimo || "",
-        unit: item.unit || item.unidad || "kg",
-        expirationDate: item.expirationDate || item.fechaVencimiento || "",
+        name:         item.nombre || item.name || "",
+        category:     item.tipo   || item.category || "ALIMENTO",
+        currentStock: item.cantidad     ?? item.stockActual     ?? item.currentStock ?? "",
+        minimumStock: item.stockMinimo  ?? item.minimumStock    ?? "",
+        unit:         item.unidad || item.unit || "kg",
       });
     } else {
       setForm(initialState);
     }
   }, [item, show]);
 
-  function handleChange(event) {
-    const { name, value } = event.target;
+  function handleChange(e) {
+    const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
-
+  function handleSubmit(e) {
+    e.preventDefault();
     onSubmit({
       ...form,
       currentStock: Number(form.currentStock),
@@ -53,9 +44,7 @@ export default function InventoryForm({
     <Modal show={show} onHide={onClose} size="lg" centered>
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
-          <Modal.Title>
-            {item ? "Editar insumo" : "Nuevo insumo"}
-          </Modal.Title>
+          <Modal.Title>{item ? "Editar insumo" : "Nuevo insumo"}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
@@ -63,28 +52,18 @@ export default function InventoryForm({
             <Col md={12}>
               <Form.Group>
                 <Form.Label>Nombre del insumo</Form.Label>
-                <Form.Control
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Ej: Heno de alfalfa premium"
-                />
+                <Form.Control name="name" value={form.name} onChange={handleChange} required placeholder="Ej: Heno de alfalfa" />
               </Form.Group>
             </Col>
 
             <Col md={6}>
               <Form.Group>
                 <Form.Label>Categoría</Form.Label>
-                <Form.Select
-                  name="category"
-                  value={form.category}
-                  onChange={handleChange}
-                >
-                  <option value="Alimento">Alimento</option>
-                  <option value="Medicina">Medicina</option>
-                  <option value="Limpieza">Limpieza</option>
-                  <option value="Equipo">Equipo</option>
+                {/* FIX: values match backend enum ALIMENTO / MEDICINA / OTRO */}
+                <Form.Select name="category" value={form.category} onChange={handleChange}>
+                  <option value="ALIMENTO">Alimento</option>
+                  <option value="MEDICINA">Medicina</option>
+                  <option value="OTRO">Limpieza / Equipo / Otro</option>
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -105,48 +84,22 @@ export default function InventoryForm({
             <Col md={6}>
               <Form.Group>
                 <Form.Label>Stock actual</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="currentStock"
-                  value={form.currentStock}
-                  onChange={handleChange}
-                  required
-                />
+                <Form.Control type="number" name="currentStock" value={form.currentStock} onChange={handleChange} required />
               </Form.Group>
             </Col>
 
             <Col md={6}>
               <Form.Group>
                 <Form.Label>Stock mínimo</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="minimumStock"
-                  value={form.minimumStock}
-                  onChange={handleChange}
-                  required
-                />
+                <Form.Control type="number" name="minimumStock" value={form.minimumStock} onChange={handleChange} required />
               </Form.Group>
             </Col>
-
-            <Col md={12}>
-              <Form.Group>
-                <Form.Label>Fecha de vencimiento</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="expirationDate"
-                  value={form.expirationDate}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
+            {/* NOTE: fechaVencimiento does NOT exist in the Inventario model — field removed */}
           </Row>
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="light" onClick={onClose}>
-            Cancelar
-          </Button>
-
+          <Button variant="light" onClick={onClose}>Cancelar</Button>
           <Button className="btn-primary-custom" type="submit" disabled={loading}>
             {loading ? "Guardando..." : "Guardar insumo"}
           </Button>

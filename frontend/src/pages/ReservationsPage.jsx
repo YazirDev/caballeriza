@@ -15,13 +15,10 @@ export default function ReservationsPage() {
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    loadPage();
-  }, []);
+  useEffect(() => { loadPage(); }, []);
 
   async function loadPage() {
     setLoading(true);
-
     try {
       const [reservasData, caballosData] = await Promise.allSettled([getReservas(), getCaballos()]);
       setReservas(reservasData.status === "fulfilled" && Array.isArray(reservasData.value) ? reservasData.value : []);
@@ -31,16 +28,16 @@ export default function ReservationsPage() {
     }
   }
 
-  const filteredReservas = useMemo(() => {
-    return reservas.filter((reserva) => {
-      const text = `${reserva.cliente || ""} ${reserva.tipo || ""} ${reserva.estado || ""}`.toLowerCase();
+  const filteredReservas = useMemo(() =>
+    // FIX: no 'cliente' in backend — filter by caballo nombre, tipo, estado
+    reservas.filter((r) => {
+      const text = `${r.caballo?.nombre || ""} ${r.tipo || ""} ${r.estado || ""}`.toLowerCase();
       return text.includes(search.toLowerCase());
-    });
-  }, [reservas, search]);
+    }),
+  [reservas, search]);
 
   async function handleSubmit(payload) {
     setSaving(true);
-
     try {
       await createReserva(payload);
       setShowForm(false);
@@ -55,9 +52,7 @@ export default function ReservationsPage() {
     await loadPage();
   }
 
-  if (loading) {
-    return <Loading text="Cargando reservas..." />;
-  }
+  if (loading) return <Loading text="Cargando reservas..." />;
 
   return (
     <>
@@ -75,8 +70,8 @@ export default function ReservationsPage() {
         <div className="table-toolbar">
           <Form.Control
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por cliente, tipo o estado..."
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por caballo, tipo o estado..."
           />
         </div>
 
@@ -93,28 +88,26 @@ export default function ReservationsPage() {
             <Table hover>
               <thead>
                 <tr>
-                  <th>Cliente</th>
-                  <th>Caballo</th>
+                  <th>Caballo</th>   {/* FIX: was 'Cliente' — no cliente field in backend */}
                   <th>Tipo</th>
                   <th>Fecha</th>
-                  <th>Horario</th>
                   <th>Estado</th>
                   <th className="text-end">Acciones</th>
                 </tr>
               </thead>
-
               <tbody>
                 {filteredReservas.map((reserva) => (
                   <tr key={reserva.id}>
-                    <td>{reserva.cliente}</td>
-                    <td>{reserva.caballo?.nombre || reserva.caballoNombre || reserva.caballoId}</td>
+                    {/* FIX: show caballo.nombre, backend has no 'cliente' */}
+                    <td>{reserva.caballo?.nombre || "—"}</td>
                     <td>{reserva.tipo}</td>
-                    <td>{reserva.fecha}</td>
                     <td>
-                      {reserva.horaInicio} - {reserva.horaFin}
+                      {reserva.fecha
+                        ? new Date(reserva.fecha).toLocaleString("es-CR", { dateStyle: "short", timeStyle: "short" })
+                        : "—"}
                     </td>
                     <td>
-                      <Badge bg={reserva.estado === "CANCELADA" ? "danger" : "success"}>
+                      <Badge bg={reserva.estado === "CANCELADA" ? "danger" : reserva.estado === "CONFIRMADA" ? "success" : "warning"}>
                         {reserva.estado || "PENDIENTE"}
                       </Badge>
                     </td>

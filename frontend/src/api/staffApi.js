@@ -1,30 +1,31 @@
 import api from "./axiosConfig";
 
+// Empleado model: nombre, rol (enum: VETERINARIO/POTRADOR/CUIDADOR/ADMINISTRADOR), contacto
 function normalizeEmployeePayload(payload) {
   const rolRaw = payload.rol || payload.role || "CUIDADOR";
   return {
-    nombre: payload.nombre || payload.name,
-    rol: rolRaw.toUpperCase(),           // FIX: "Cuidador" → "CUIDADOR"
+    nombre:   payload.nombre || payload.name,
+    rol:      rolRaw.toUpperCase(), // FIX: "Cuidador" → "CUIDADOR"
     contacto: payload.contacto || payload.contact || payload.phone || payload.email,
   };
 }
 
 function normalizeShiftPayload(payload) {
   return {
-    fecha: payload.fecha || payload.date,
-    horaInicio: payload.horaInicio || payload.startTime,
-    horaFin: payload.horaFin || payload.endTime,
+    fecha:       payload.fecha || payload.date,
+    horaInicio:  payload.horaInicio || payload.startTime,
+    horaFin:     payload.horaFin || payload.endTime,
     descripcion: payload.descripcion || payload.notes || "",
   };
 }
 
 function normalizeTaskPayload(payload) {
   return {
-    titulo: payload.titulo || payload.title,
+    titulo:      payload.titulo || payload.title,
     descripcion: payload.descripcion || payload.description || "",
-    prioridad: (payload.prioridad || payload.priority || "MEDIA").toUpperCase(),
+    prioridad:   (payload.prioridad || payload.priority || "MEDIA").toUpperCase(),
     fechaLimite: payload.fechaLimite || payload.dueDate,
-    estado: (payload.estado || payload.status || "PENDIENTE").toUpperCase(),
+    estado:      (payload.estado || payload.status || "PENDIENTE").toUpperCase(),
   };
 }
 

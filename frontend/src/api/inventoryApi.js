@@ -1,13 +1,26 @@
 import api from "./axiosConfig";
 
+// Inventario model fields: nombre, tipo (enum), cantidad, unidad, stockMinimo
+// NOTE: the model has NO fechaVencimiento field — that field doesn't exist in the backend
 function normalizeInventoryPayload(payload) {
   const tipoRaw = payload.tipo || payload.category || "OTRO";
+
+  // Map Spanish display names to enum values
+  const tipoMap = {
+    alimento: "ALIMENTO",
+    medicina: "MEDICINA",
+    limpieza: "OTRO",
+    equipo:   "OTRO",
+    otro:     "OTRO",
+  };
+  const tipoNorm = tipoMap[tipoRaw.toLowerCase()] || tipoRaw.toUpperCase();
+
   return {
-    nombre: payload.nombre || payload.name,
-    tipo: tipoRaw.toUpperCase(),         // FIX: enum ALIMENTO/MEDICINA/OTRO
-    cantidad: Number(payload.stockActual || payload.currentStock || payload.cantidad),  // FIX: campo correcto
-    stockMinimo: Number(payload.stockMinimo || payload.minimumStock),
-    unidad: payload.unidad || payload.unit,
+    nombre:     payload.nombre || payload.name,
+    tipo:       tipoNorm,                                                   // FIX: enum ALIMENTO/MEDICINA/OTRO
+    cantidad:   Number(payload.stockActual || payload.currentStock || payload.cantidad || 0), // FIX: backend uses 'cantidad'
+    stockMinimo:Number(payload.stockMinimo || payload.minimumStock || 0),
+    unidad:     payload.unidad || payload.unit || "kg",
   };
 }
 

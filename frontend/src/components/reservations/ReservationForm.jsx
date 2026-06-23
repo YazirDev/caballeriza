@@ -3,12 +3,9 @@ import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 
 const initialState = {
   horseId: "",
-  clientName: "",
-  type: "Paseo",
+  type: "PASEO",
   date: "",
   startTime: "",
-  endTime: "",
-  status: "Confirmada",
   notes: "",
 };
 
@@ -77,10 +74,10 @@ export default function ReservationForm({
               <Form.Group>
                 <Form.Label>Tipo de reserva</Form.Label>
                 <Form.Select name="type" value={form.type} onChange={handleChange}>
-                  <option value="Veterinario">Veterinario</option>
-                  <option value="Monta">Monta</option>
-                  <option value="Paseo">Paseo</option>
-                  <option value="Entrenamiento">Entrenamiento</option>
+                  <option value="VETERINARIO">Veterinario</option>
+                  <option value="MONTA">Monta</option>
+                  <option value="PASEO">Paseo</option>
+                  <option value="ENTRENAMIENTO">Entrenamiento</option>
                 </Form.Select>
               </Form.Group>
             </Col>

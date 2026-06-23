@@ -1,13 +1,16 @@
 import api from "./axiosConfig";
 
 function normalizeReservationPayload(payload) {
-  const tipoRaw = payload.tipo || payload.type || "";
-  const estadoRaw = payload.estado || payload.status || "PENDIENTE";
+  // Combinar date + startTime en LocalDateTime: "2024-06-22T10:00:00"
+  const fecha = payload.fecha || payload.date;
+  const hora = payload.horaInicio || payload.startTime || "00:00";
+  const fechaHora = fecha && hora ? `${fecha}T${hora}:00` : fecha;
+
   return {
-    caballo: { id: Number(payload.caballoId || payload.caballo?.id) },  // FIX: objeto con id
-    tipo: tipoRaw.toUpperCase(),         // FIX: "Paseo" → "PASEO"
-    fecha: payload.fecha || payload.date,
-    estado: estadoRaw.toUpperCase(),     // FIX: "Confirmada" → "CONFIRMADA"
+    caballo: { id: Number(payload.caballoId || payload.caballo?.id) },
+    tipo: (payload.tipo || payload.type || "").toUpperCase(),
+    fecha: fechaHora,
+    estado: (payload.estado || payload.status || "PENDIENTE").toUpperCase(),
     notas: payload.notas || payload.notes || "",
   };
 }

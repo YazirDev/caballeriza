@@ -141,8 +141,8 @@ export default function HorseForm({
                   required
                 >
                   <option value="">Seleccione</option>
-                  <option value="Macho">Macho</option>
-                  <option value="Hembra">Hembra</option>
+                  <option value="MACHO">Macho</option>
+                  <option value="HEMBRA">Hembra</option>
                 </Form.Select>
               </Form.Group>
             </Col>

@@ -97,11 +97,10 @@ export default function StaffForm({
               <Form.Group>
                 <Form.Label>Rol</Form.Label>
                 <Form.Select name="role" value={form.role} onChange={handleChange}>
-                  <option value="Administrador">Administrador</option>
-                  <option value="Veterinario">Veterinario</option>
-                  <option value="Cuidador">Cuidador</option>
-                  <option value="Potrador">Potrador</option>
-                  <option value="Cliente">Cliente</option>
+                  <option value="ADMINISTRADOR">Administrador</option>
+                  <option value="VETERINARIO">Veterinario</option>
+                  <option value="CUIDADOR">Cuidador</option>
+                  <option value="POTRADOR">Potrador</option>
                 </Form.Select>
               </Form.Group>
             </Col>
